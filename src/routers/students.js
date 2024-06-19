@@ -4,20 +4,20 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const router = Router();
 
-router.get('/students', async (req, res, next) => {
-  try {
+router.get(
+  '/students',
+  ctrlWrapper(async (req, res) => {
     const students = await getAllStudents();
     res.status(200).json({
       data: students,
     });
-  } catch (err) {
-    next(err); // Передаем ошибку дальше для обработки middleware errorHandler
-  }
-});
+  }),
+);
 
-router.get('/students/:studentId', async (req, res, next) => {
-  const { studentId } = req.params;
-  try {
+router.get(
+  '/students/:studentId',
+  ctrlWrapper(async (req, res) => {
+    const { studentId } = req.params;
     const student = await getStudentById(studentId);
     if (!student) {
       res.status(404).json({
@@ -28,9 +28,7 @@ router.get('/students/:studentId', async (req, res, next) => {
     res.status(200).json({
       data: student,
     });
-  } catch (err) {
-    next(err); // Передаем ошибку дальше для обработки middleware errorHandler
-  }
-});
+  }),
+);
 
 export default router;
