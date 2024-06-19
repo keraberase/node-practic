@@ -3,7 +3,6 @@
 
 import { getAllStudents, getStudentById } from '../services/students.js';
 
-
 export const getStudentsController = async (req, res, next) => {
   try {
     const students = await getAllStudents();
@@ -14,22 +13,28 @@ export const getStudentsController = async (req, res, next) => {
       data: students,
     });
   } catch (err) {
-    next(err);
+    next(err); // Передаем ошибку дальше для обработки middleware errorHandler
   }
 };
 
-export const getStudentByIdController = async ( req,res,next,) => {
-const { studentId } = req.params;
-const student = await getStudentById(studentId);
+export const getStudentByIdController = async (req, res, next) => {
+  const { studentId } = req.params;
 
-if (!student) {
-next(new Error('Student not found'));
-return;
-}
+  try {
+    const student = await getStudentById(studentId);
 
- res.json({
-status: 200,
-message: `Successfully found student with id ${studentId}!`,
-data: student,
-});
+    if (!student) {
+      const error = new Error(`Student not found with id ${studentId}`);
+      error.status = 404;
+      throw error; // Бросаем ошибку, чтобы попасть в блок обработки ошибок
+    }
+
+    res.json({
+      status: 200,
+      message: `Successfully found student with id ${studentId}!`,
+      data: student,
+    });
+  } catch (err) {
+    next(err); // Передаем ошибку дальше для обработки middleware errorHandler
+  }
 };

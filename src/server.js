@@ -4,7 +4,6 @@ import cors from 'cors';
 
 import studentsRouter from './routers/students.js';
 import { env } from './utils/env.js';
-// Імпортуємо middleware
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
