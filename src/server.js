@@ -4,8 +4,6 @@ import cors from 'cors';
 
 import studentsRouter from './routers/students.js';
 import { env } from './utils/env.js';
-import { errorHandler } from './middlewares/errorHandler.js';
-import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -29,11 +27,20 @@ export const startServer = () => {
     });
   });
 
-  app.use(studentsRouter);
+  app.use('/api', studentsRouter);
 
-  app.use('*', notFoundHandler);
+  app.use('*', (req, res) => {
+    res.status(404).json({
+      message: 'Not found',
+    });
+  });
 
-  app.use(errorHandler);
+  app.use((err, req, res, next) => {
+    res.status(500).json({
+      message: 'Something went wrong',
+      error: err.message,
+    });
+  });
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
