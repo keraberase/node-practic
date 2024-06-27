@@ -1,13 +1,16 @@
+// server.js
+
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
-
+import { createStudentSchema } from './validation/students.js';
 import studentsRouter from './routers/students.js';
+import HttpError from './middlewares/HttpError.js';
 import { env } from './utils/env.js';
 
 const PORT = Number(env('PORT', '3000'));
 
-export const startServer = () => {
+const startServer = () => {
   const app = express();
 
   app.use(express.json());
@@ -21,28 +24,44 @@ export const startServer = () => {
     }),
   );
 
-  app.get('/', (req, res) => {
-    res.json({
-      message: 'Hello World!',
-    });
+  // Пример маршрута с валидацией
+  app.post('/students', async (req, res, next) => {
+    try {
+      await createStudentSchema.validateAsync(req.body, { abortEarly: false });
+      // Дальнейшая обработка после успешной валидации
+      res.status(201).json({ message: 'Student created successfully' });
+    } catch (validationError) {
+      next(validationError);
+    }
   });
 
+  // Подключение маршрутизатора студентов
   app.use('/api', studentsRouter);
 
+  // Обработка некорректных маршрутов
   app.use('*', (req, res) => {
     res.status(404).json({
       message: 'Not found',
     });
   });
 
+  // Middleware для обработки ошибок должен принимать 4 параметра, включая next
   app.use((err, req, res, next) => {
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
-    });
+    if (err instanceof HttpError) {
+      res.status(err.status).json({
+        message: err.message,
+      });
+    } else {
+      res.status(500).json({
+        message: 'Something went wrong',
+        error: err.message,
+      });
+    }
   });
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 };
+
+export { startServer };

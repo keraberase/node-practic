@@ -1,6 +1,6 @@
 import { HttpError } from 'http-errors';
 
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res) => {
   // Перевірка, чи отримали ми помилку від createHttpError
   if (err instanceof HttpError) {
     res.status(err.status).json({

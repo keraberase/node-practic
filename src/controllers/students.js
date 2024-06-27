@@ -5,20 +5,30 @@ import { getAllStudents, getStudentById } from '../services/students.js';
 import { createStudent } from '../services/students.js';
 import { deleteStudent } from "../services/students.js";
 import { updateStudent } from '../services/students.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 
-export const getStudentsController = async (req, res, next) => {
-  try {
-    const students = await getAllStudents();
+export const getStudentsController = async (req, res) => {
+  const { page, perPage } = parsePaginationParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
 
-    res.json({
-      status: 200,
-      message: 'Successfully found students!',
-      data: students,
-    });
-  } catch (err) {
-    next(err); // Передаем ошибку дальше для обработки middleware errorHandler
-  }
+  const students = await getAllStudents({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
+
+  res.json({
+    status: 200,
+    message: 'Successfully found students!',
+    data: students,
+  });
 };
+
 
 
 export const getStudentByIdController = async (req, res, next) => {
@@ -94,3 +104,5 @@ export const patchStudentController = async (req, res, next) => {
     data: result.student,
   });
 };
+
+
