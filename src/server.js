@@ -10,7 +10,7 @@ import { env } from './utils/env.js';
 import cookieParser from 'cookie-parser';
 import { UPLOAD_DIR } from './constants/index.js';
 
-const PORT = Number(env('PORT', '3001'));
+const PORT = Number(env('PORT', '3021'));
 
 const startServer = () => {
   const app = express();
