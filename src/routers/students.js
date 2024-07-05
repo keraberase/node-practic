@@ -10,6 +10,7 @@ import { checkRoles } from '../middlewares/checkRoles.js';
 import { ROLES } from '../constants/index.js';
 import { upload } from '../middlewares/multer.js';
 
+
 import {
   getStudentsController,
   getStudentByIdController,
@@ -117,5 +118,7 @@ router.patch(
   upload.single('photo'), // додаємо цю middleware
   ctrlWrapper(patchStudentController),
 );
+
+
 
 export default router;

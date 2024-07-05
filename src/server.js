@@ -8,9 +8,9 @@ import router from './routers/index.js';
 import HttpError from './middlewares/HttpError.js';
 import { env } from './utils/env.js';
 import cookieParser from 'cookie-parser';
-import { UPLOAD_DIR } from './constants/index.js';
+ import { UPLOAD_DIR } from './constants/index.js';
 
-const PORT = Number(env('PORT', '3021'));
+const PORT = Number(env('PORT', '3000'));
 
 const startServer = () => {
   const app = express();
@@ -36,7 +36,7 @@ app.use(cookieParser());
       next(validationError);
     }
   });
-  app.use('/uploads', express.static(UPLOAD_DIR));
+
 
   // Подключение маршрутизатора студентов
  app.use(router);
@@ -62,11 +62,12 @@ app.use(cookieParser());
     }
   });
 
+   app.use('/uploads', express.static(UPLOAD_DIR));
+
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
 };
-
 
 export { startServer };
 
